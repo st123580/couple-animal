@@ -16,7 +16,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   late String level;
   late int score;
-  var getstart = 0;
+  var getstart = 'norun';
   late int row;
   late int column;
   int previousindex = -1;
@@ -63,7 +63,7 @@ class _MyAppState extends State<MyApp> {
     }
     //đã chọn level
     else {
-      getstart = 1;
+      getstart = 'ready';
       animal.shuffle();
       if (level == 'Easy') {
         card = animal.sublist(0, 4); //4 con vật
@@ -121,7 +121,7 @@ class _MyAppState extends State<MyApp> {
     Timer(const Duration(seconds: 3), () {
       setState(() {
         hideanimal();
-        getstart = 2; //chạy game
+        getstart = 'run';
       });
     });
   }
@@ -129,18 +129,18 @@ class _MyAppState extends State<MyApp> {
   String getanimal(int index) {
     String temp = 'assets/018-back.png';
     switch (getstart) {
-      case 0:
+      case 'norun':
         {
           temp = 'assets/018-back.png';
           break;
         }
-      case 1:
+      case 'ready':
         {
           temp = card[index];
           break;
         }
-      case 2:
-      case 3:
+      case 'run':
+      case 'pause':
         {
           switch (hiddencard[index]) {
             case 0:
@@ -166,16 +166,16 @@ class _MyAppState extends State<MyApp> {
 
   void choose(int index) {
     setState(() {
-      if (getstart < 2 || getstart == 3 || hiddencard[index] > 0) {
-        return; //không thể thao tác với hình khi trò chơi chưa bắt đầu, hoặc khi có 2 hình đang lật, hoặc hình không còn bị che
+      if (getstart != 'run'|| hiddencard[index] > 0) {
+        return;
       }
       //lật hình được chọn
       hiddencard[index] = 1;
       if (previousindex < 0) {
         previousindex = index;
       } else if (previousindex >= 0) {
-        getstart = 3;
-        Timer(const Duration(milliseconds: 500), () {
+        getstart = 'pause';
+        Timer(const Duration(milliseconds: 200), () {
           setState(() {
             //2 hình giống nhau được thay bằng dấu tích, cộng 10 điểm, đặt lại số lần sai liên tiếp
             if (card[index] == card[previousindex]) {
@@ -194,7 +194,7 @@ class _MyAppState extends State<MyApp> {
                 score -= 5;
               }
             }
-            getstart = 2;
+            getstart = 'run';
             previousindex = -1;
           });
         });
@@ -258,7 +258,7 @@ class _MyAppState extends State<MyApp> {
                                 fontWeight: FontWeight.bold, fontSize: 33)),
                         onPressed: () => setState(() {
                           level = 'Easy';
-                          getstart = 0;
+                          getstart = 'norun';
                           previousindex == -1;
                           column = 2;
                           row = 4;
@@ -273,7 +273,7 @@ class _MyAppState extends State<MyApp> {
                                 fontWeight: FontWeight.bold, fontSize: 33)),
                         onPressed: () => setState(() {
                           level = 'Medium';
-                          getstart = 0;
+                          getstart = 'norun';
                           previousindex == -1;
                           column = 3;
                           row = 4;
@@ -287,7 +287,7 @@ class _MyAppState extends State<MyApp> {
                                 fontWeight: FontWeight.bold, fontSize: 33)),
                         onPressed: () => setState(() {
                           level = 'Hard';
-                          getstart = 0;
+                          getstart = 'norun';
                           previousindex == -1;
                           column = 4;
                           row = 6;
